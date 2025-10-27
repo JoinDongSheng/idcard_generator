@@ -28,7 +28,7 @@ jobs:
         pyinstaller --windowed --clean --noconfirm --onefile -i raw/img/logo.ico --add-data "raw;raw" main.py
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: windows-exe
         path: dist/main.exe
@@ -55,7 +55,7 @@ jobs:
         ./build-macos.sh
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mac-app
         path: dist/main.app
