@@ -323,6 +323,18 @@ def load_area_data(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except FileNotFoundError:
+        # 当使用PyInstaller打包后，尝试在sys._MEIPASS中查找文件
+        try:
+            import sys
+            import os
+            if hasattr(sys, '_MEIPASS'):
+                # PyInstaller打包后的临时目录
+                base_path = sys._MEIPASS
+                file_path = os.path.join(base_path, file_path)
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+        except Exception:
+            pass
         print(f"错误：找不到文件 {file_path}")
         return []
     except json.JSONDecodeError:

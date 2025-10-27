@@ -20,7 +20,8 @@ raw_dir = os.path.join(utils.get_base_path(), 'raw')
 print("raw_dir", raw_dir)
 
 # 初始化身份证生成器
-sample_area_data = id_card_utils2.load_area_data('raw/area_2023.json');
+area_data_file = os.path.join(raw_dir, 'area_2023.json')
+sample_area_data = id_card_utils2.load_area_data(area_data_file);
 id_card_generator = id_card_utils2.IDCardGenerator(sample_area_data)
 
 def set_entry_value(entry, value):
