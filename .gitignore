@@ -1,0 +1,18 @@
+# Python:
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+dist
+build
+venv
+out
+
+#idea
+.idea
+.pip
+.venv
+.vscode
+*.log
+
+#project
