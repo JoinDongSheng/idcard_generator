@@ -29,7 +29,7 @@ jobs:
         
     - name: Build executable
       run: |
-        pyinstaller --windowed --clean --noconfirm --onefile -i raw/img/logo.ico --add-data "raw;raw" main.py
+        pyinstaller --windowed --clean --noconfirm --onefile -i raw/img/logo.ico --add-data "raw;raw" --name idCardGenerator main.py
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
