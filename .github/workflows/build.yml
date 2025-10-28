@@ -34,36 +34,35 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: idCardGenerator
+        name: windows-exe
         path: dist/idCardGenerator.exe
 
-#  build-mac:
-#    runs-on: macos-latest
-#    steps:
-#    - name: Checkout code
-#      uses: actions/checkout@v3
-#
-#    - name: Set up Python
-#      uses: actions/setup-python@v4
-#      with:
-#        python-version: '3.8'
-#
-#    - name: Install dependencies
-#      run: |
-#        python -m pip install --upgrade pip
-#        pip install --no-cache-dir -r requirements.txt
-#
-#    - name: Check installed packages
-#      run: |
-#        pip list
-#
-#    - name: Build executable
-#      run: |
-#        chmod +x build-macos.sh
-#        ./build-macos.sh
-#
-#    - name: Upload artifact
-#      uses: actions/upload-artifact@v4
-#      with:
-#        name: idCardGenerator
-#        path: dist/idCardGenerator.app
+  build-mac:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install --no-cache-dir -r requirements.txt
+
+    - name: Check installed packages
+      run: |
+        pip list
+
+    - name: Build executable
+      run: |
+        pyinstaller --windowed --clean --noconfirm --onefile -i raw/img/logo.icns --add-data "raw:raw" --name idCardGenerator main.py
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: mac-app
+        path: dist/idCardGenerator.app
