@@ -1,7 +1,7 @@
 # 身份证图片构造器 idcard_generator
 
 【仅做研究使用，请遵守当地法律法规，法律后果自负】
-
+在 https://github.com/bzsome/idcard_generator 的项目基础上修改增加了省市区的随机生成
 身份证图片生成工具,填入信息，选择一张头像图片,即可生成黑白和彩色身份证图片。
 
 可以选择是否自动抠图，自动抠图目前仅支持纯色背景，对自动抠图效果不满意可以手动抠图。
@@ -10,9 +10,9 @@
 
 ## 直接下载程序
 
-- 身份证构造器Windows版： [idcard_generator_win64.exe](https://github.com/bzsome/idcard_generator/releases/download/v1.1.0/idcard_generator_win64_1.1.0.exe)
+- 身份证构造器Windows版： releases中下载
 
-- 身份证构造器Macos版：[idcard_generator_macos.zip](https://github.com/bzsome/idcard_generator/releases/download/v1.1.0/idcard_generator_macos_1.1.0.zip)
+- 身份证构造器Macos版：releases中下载
 
 - 注意：macos版本启动大约需要时间70s，测试支持系统Macos 11
 

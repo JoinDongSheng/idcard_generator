@@ -35,6 +35,8 @@ class LoadingBar(object):
         self.progress_bar = None
         self.__showFlag = False
         self.__sleep = 1
+        # 添加关闭后的回调函数
+        self.__on_close_callback = None
 
     def show(self, parent=None, speed=10, sleep=1):
         """显示的时候支持重置滚动条速度和标识判断等待时长"""
@@ -95,9 +97,16 @@ class LoadingBar(object):
         # 父窗口解除禁用
         self.__parent.grab_release()
 
-    def close(self):
+        # 执行关闭后的回调函数
+        if self.__on_close_callback:
+            self.__on_close_callback()
+            self.__on_close_callback = None
+
+    def close(self, callback=None):
         # 设置显示标识为不显示
         self.__showFlag = False
+        # 设置关闭后的回调函数
+        self.__on_close_callback = callback
 
     def stop(self):
         time.sleep(5)

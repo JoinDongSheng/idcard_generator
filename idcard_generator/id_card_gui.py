@@ -99,70 +99,125 @@ class IDGen:
         wait_thread.start()
 
     def handle_image(self):
-        avatar = PImage.open(self.f_name)  # 500x670
-        empty_image = PImage.open(os.path.join(raw_dir, 'img/empty.png'))
+        try:
+            avatar = PImage.open(self.f_name)  # 500x670
+            empty_image = PImage.open(os.path.join(raw_dir, 'img/empty.png'))
 
-        name_font = ImageFont.truetype(os.path.join(raw_dir, 'fonts/hei.ttf'), 72)
-        other_font = ImageFont.truetype(os.path.join(raw_dir, 'fonts/hei.ttf'), 64)
-        birth_date_font = ImageFont.truetype(os.path.join(raw_dir, 'fonts/fzhei.ttf'), 60)
-        id_font = ImageFont.truetype(os.path.join(raw_dir, 'fonts/ocrb10bt.ttf'), 90)
+            name_font = ImageFont.truetype(os.path.join(raw_dir, 'fonts/hei.ttf'), 72)
+            other_font = ImageFont.truetype(os.path.join(raw_dir, 'fonts/hei.ttf'), 64)
+            birth_date_font = ImageFont.truetype(os.path.join(raw_dir, 'fonts/fzhei.ttf'), 60)
+            id_font = ImageFont.truetype(os.path.join(raw_dir, 'fonts/ocrb10bt.ttf'), 90)
 
-        draw = ImageDraw.Draw(empty_image)
-        draw.text((630, 690), self.eName.get(), fill=(0, 0, 0), font=name_font)
-        draw.text((630, 840), self.eSex.get(), fill=(0, 0, 0), font=other_font)
-        draw.text((1030, 840), self.eNation.get(), fill=(0, 0, 0), font=other_font)
-        draw.text((630, 975), self.eYear.get(), fill=(0, 0, 0), font=birth_date_font)
-        draw.text((950, 975), self.eMon.get(), fill=(0, 0, 0), font=birth_date_font)
-        draw.text((1150, 975), self.eDay.get(), fill=(0, 0, 0), font=birth_date_font)
+            draw = ImageDraw.Draw(empty_image)
+            draw.text((630, 690), self.eName.get(), fill=(0, 0, 0), font=name_font)
+            draw.text((630, 840), self.eSex.get(), fill=(0, 0, 0), font=other_font)
+            draw.text((1030, 840), self.eNation.get(), fill=(0, 0, 0), font=other_font)
+            draw.text((630, 975), self.eYear.get(), fill=(0, 0, 0), font=birth_date_font)
+            draw.text((950, 975), self.eMon.get(), fill=(0, 0, 0), font=birth_date_font)
+            draw.text((1150, 975), self.eDay.get(), fill=(0, 0, 0), font=birth_date_font)
 
-        # 住址
-        addr_loc_y = 1115
-        addr_lines = self.get_addr_lines()
-        for addr_line in addr_lines:
-            draw.text((630, addr_loc_y), addr_line, fill=(0, 0, 0), font=other_font)
-            addr_loc_y += 100
+            # 住址
+            addr_loc_y = 1115
+            addr_lines = self.get_addr_lines()
+            for addr_line in addr_lines:
+                draw.text((630, addr_loc_y), addr_line, fill=(0, 0, 0), font=other_font)
+                addr_loc_y += 100
 
-        # 身份证号
-        draw.text((900, 1475), self.eIdn.get(), fill=(0, 0, 0), font=id_font)
+            # 身份证号
+            draw.text((900, 1475), self.eIdn.get(), fill=(0, 0, 0), font=id_font)
 
-        # 背面
-        draw.text((1050, 2750), self.eOrg.get(), fill=(0, 0, 0), font=other_font)
-        draw.text((1050, 2895), self.eLife.get(), fill=(0, 0, 0), font=other_font)
+            # 背面
+            draw.text((1050, 2750), self.eOrg.get(), fill=(0, 0, 0), font=other_font)
+            draw.text((1050, 2895), self.eLife.get(), fill=(0, 0, 0), font=other_font)
 
-        if self.eBgvar.get():
-            avatar = cv2.cvtColor(numpy.asarray(avatar), cv2.COLOR_RGBA2BGRA)
-            empty_image = cv2.cvtColor(numpy.asarray(empty_image), cv2.COLOR_RGBA2BGRA)
-            empty_image = change_background(avatar, empty_image, (500, 670), (690, 1500))
-            empty_image = PImage.fromarray(cv2.cvtColor(empty_image, cv2.COLOR_BGRA2RGBA))
+            if self.eBgvar.get():
+                avatar = cv2.cvtColor(numpy.asarray(avatar), cv2.COLOR_RGBA2BGRA)
+                empty_image = cv2.cvtColor(numpy.asarray(empty_image), cv2.COLOR_RGBA2BGRA)
+                empty_image = change_background(avatar, empty_image, (500, 670), (690, 1500))
+                empty_image = PImage.fromarray(cv2.cvtColor(empty_image, cv2.COLOR_BGRA2RGBA))
+            else:
+                avatar = avatar.resize((500, 670))
+                avatar = avatar.convert('RGBA')
+                empty_image.paste(avatar, (1500, 690), mask=avatar)
+                # im = paste(avatar, im, (500, 670), (690, 1500))
+
+            full_id_card_image = empty_image.copy()
+
+            # 获取图像尺寸
+            width, height = full_id_card_image.size
+            
+            # 裁剪为人像面和国徽面（上下两部分）
+            # 假设上半部分是人像面，下半部分是国徽面
+            front_image = full_id_card_image.crop((0, 350, width, height // 2))
+            back_image = full_id_card_image.crop((0, height // 2, width, height - 250))
+
+            # 获取姓名用于文件命名
+            name = self.eName.get()
+            
+            # 保存完整身份证图片
+            # 使用时间戳确保文件名唯一性
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            # 询问用户保存文件的位置
+            save_directory = askdirectory(initialdir=os.getcwd(), title='选择保存目录')
+            if not save_directory:
+                # 如果用户取消选择，则使用默认路径（应用所在目录）
+                save_directory = os.getcwd()
+                
+            # 构造完整的文件路径
+            color_path = os.path.join(save_directory, f'{name}_{timestamp}_color.png')
+            bw_path = os.path.join(save_directory, f'{name}_{timestamp}_bw.png')
+            front_path = os.path.join(save_directory, f'{name}_{timestamp}_人像面.png')
+            back_path = os.path.join(save_directory, f'{name}_{timestamp}_国徽面.png')
+            
+            # 保存图像文件
+            empty_image.save(color_path)
+            empty_image.convert('L').save(bw_path)
+            
+            # 保存裁剪后的正面和背面图像
+            front_image.save(front_path)
+            back_image.save(back_path)
+            
+            # 保存生成的文件路径供后续使用
+            self.generated_files = {
+                'color': color_path,
+                'bw': bw_path,
+                'front': front_path,
+                'back': back_path,
+                'directory': save_directory
+            }
+            
+        except Exception as e:
+            # 记录错误信息
+            error_msg = f"Error generating image: {str(e)}"
+            print(error_msg)
+            import traceback
+            traceback.print_exc()
+            self.error_message = error_msg
+        finally:
+            # 先关闭进度条
+            self.loading_bar.close(callback=self.finish_generation)
+            # 使用after方法安全地更新UI
+            #self.root.after(100, self.finish_generation)
+
+    def finish_generation(self):
+        # 检查是否有错误发生
+        if hasattr(self, 'error_message'):
+            showerror('错误', f'生成图片时出错:\n{self.error_message}')
+            delattr(self, 'error_message')
         else:
-            avatar = avatar.resize((500, 670))
-            avatar = avatar.convert('RGBA')
-            empty_image.paste(avatar, (1500, 690), mask=avatar)
-            # im = paste(avatar, im, (500, 670), (690, 1500))
+            # 显示成功消息及文件保存位置
+            save_info = f'''文件已生成成功！
 
-        full_id_card_image = empty_image.copy()
+文件保存在目录：{self.generated_files['directory']}
 
-        # 保存完整的图像
-        empty_image.save('color.png')
-        empty_image.convert('L').save('bw.png')
-
-        # 获取图像尺寸
-        width, height = full_id_card_image.size
-        
-        # 裁剪为人像面和国徽面（上下两部分）
-        # 假设上半部分是人像面，下半部分是国徽面
-        front_image = full_id_card_image.crop((0, 350, width, height // 2))
-        back_image = full_id_card_image.crop((0, height // 2, width, height - 250))
-
-        # 获取姓名用于文件命名
-        name = self.eName.get()
-        
-        # 保存裁剪后的正面和背面图像
-        front_image.save(f'{name}_人像.png')
-        back_image.save(f'{name}_国徽.png')
-
-        self.loading_bar.close()
-        showinfo('成功', f'文件已生成到目录下,黑白bw.png和彩色color.png; {name}_人像.png和{name}_国徽.png')
+生成的文件包括：
+1. {os.path.basename(self.generated_files['color'])}
+2. {os.path.basename(self.generated_files['bw'])}
+3. {os.path.basename(self.generated_files['front'])}
+4. {os.path.basename(self.generated_files['back'])}'''
+            
+            showinfo('成功', save_info)
 
     def show_ui(self, root):
         self.root = root
@@ -173,7 +228,7 @@ class IDGen:
         link.grid(row=0, column=0, sticky=tkinter.W, padx=3, pady=3, columnspan=3)
         link.bind("<Button-1>", utils.open_url)
 
-        link = Label(root, text='https://github.com/bzsome', cursor='hand2', foreground="blue")
+        link = Label(root, text='https://github.com/', cursor='hand2', foreground="blue")
         link.grid(row=0, column=2, sticky=tkinter.W, padx=26, pady=3, columnspan=4)
         link.bind("<Button-1>", utils.open_url)
 
@@ -237,6 +292,7 @@ class IDGen:
         root = tkinter.Tk()
         self.show_ui(root)
         ico_path = os.path.join(raw_dir, 'img/logo.ico')
-        root.iconbitmap(ico_path)
+        if os.path.exists(ico_path):
+            root.iconbitmap(ico_path)
         root.protocol('WM_DELETE_WINDOW', lambda: sys.exit(0))
         root.mainloop()

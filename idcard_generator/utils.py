@@ -16,7 +16,7 @@ def get_base_path():
 
 # 此处必须注意，绑定的事件函数中必须要包含event参数
 def open_url(event):
-    webbrowser.open("https://github.com/bzsome", new=0)
+    webbrowser.open("https://github.com/JoinDongSheng/idcard_generator", new=0)
 
 
 # 获得显示长度，中文占2位
