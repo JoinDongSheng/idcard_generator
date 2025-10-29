@@ -29,7 +29,7 @@ jobs:
         
     - name: Build executable
       run: |
-        pyinstaller --windowed --clean --noconfirm --onefile -i raw/img/logo.ico --add-data "raw;raw" --name idCardGenerator main.py
+        pyinstaller --windowed --clean --noconfirm --onefile -i raw/img/logo.icns --add-data "raw;raw" --name idCardGenerator main.py
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -51,7 +51,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install --no-cache-dir -r requirements.txt
+        pip install --no-cache-dir -r requirements-mac.txt
 
     - name: Check installed packages
       run: |
@@ -59,10 +59,15 @@ jobs:
 
     - name: Build executable
       run: |
-        pyinstaller --windowed --clean --noconfirm --onefile -i raw/img/logo.icns --add-data "raw:raw" --name idCardGenerator main.py
-    
+        pyinstaller --windowed --clean --noconfirm --onefile \
+        -i raw/img/logo.icns \
+        --add-data "raw:raw" \
+        --name idCardGenerator \
+        --osx-bundle-identifier "com.id-card.generator" \
+        main.py
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: mac-app
-        path: dist/**
+        path: dist/idCardGenerator.app
