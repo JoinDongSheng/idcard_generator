@@ -61,8 +61,17 @@ jobs:
       run: |
         pyinstaller --windowed --clean --noconfirm --onefile -i raw/img/logo.icns --add-data "raw:raw" --name idCardGenerator main.py
 
+    - name: Verify app exists
+      run: |
+        if [ ! -d "dist/idCardGenerator.app" ]; then
+          echo "Error: idCardGenerator.app not found"
+          exit 1
+        fi
+        ls -la dist/idCardGenerator.app/
+    
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: mac-app
-        path: dist/idCardGenerator.app/**
+        path: dist/idCardGenerator.app
+        archive_format: zip
