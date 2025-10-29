@@ -46,7 +46,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.8'
+        python-version: '3.9'
 
     - name: Install dependencies
       run: |
@@ -59,13 +59,18 @@ jobs:
 
     - name: Build executable
       run: |
-        pyinstaller --windowed --clean --noconfirm --onefile \
+        python -m PyInstaller --windowed --clean --noconfirm --onefile \
         -i raw/img/logo.icns \
         --add-data "raw:raw" \
         --name idCardGenerator \
         --osx-bundle-identifier "com.id-card.generator" \
+        --target-arch universal2 \
         main.py
 
+        # 验证架构
+        echo "=== 应用架构信息 ==="
+        lipo -info dist/idCardGenerator.app/Contents/MacOS/idCardGenerator
+        
         rm -f dist/idCardGenerator
 
     - name: Upload artifact
