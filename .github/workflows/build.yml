@@ -59,10 +59,10 @@ jobs:
 
     - name: Build executable
       run: |
-        pyinstaller --windowed --clean --noconfirm -i raw/img/logo.icns --add-data "raw:raw" --name idCardGenerator main.py
+        pyinstaller --windowed --clean --noconfirm --onefile -i raw/img/logo.icns --add-data "raw:raw" --name idCardGenerator main.py
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: mac-app
-        path: dist/idCardGenerator.app
+        path: dist/idCardGenerator.app/**
