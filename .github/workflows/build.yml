@@ -70,4 +70,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: mac-app
-        path: dist/idCardGenerator.app
+        path: |
+          dist/idCardGenerator.app
