@@ -59,7 +59,7 @@ jobs:
 
     - name: Build executable
       run: |
-        python -m PyInstaller --windowed --clean --noconfirm --onefile \
+        pyinstaller --windowed --clean --noconfirm --onefile \
         -i raw/img/logo.icns \
         --add-data "raw:raw" \
         --name idCardGenerator \
