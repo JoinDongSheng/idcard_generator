@@ -59,20 +59,19 @@ jobs:
 
     - name: Build executable
       run: |
-        python -m PyInstaller --windowed --clean --noconfirm --onefile \
-        -i raw/img/logo.icns \
-        --add-data "raw:raw" \
-        --name idCardGenerator \
-        --osx-bundle-identifier "com.id-card.generator" \
-        --target-arch universal2 \
-        main.py
+        # 分别构建 x86_64 和 arm64 版本
+        arch -x86_64 pyinstaller --windowed --clean --noconfirm --onefile \
+          -i raw/img/logo.icns \
+          --add-data "raw:raw" \
+          --name idCardGenerator_x86_64 \
+          main.py
 
-        # 验证架构
-        echo "=== 应用架构信息 ==="
-        lipo -info dist/idCardGenerator.app/Contents/MacOS/idCardGenerator
+        arch -arm64 pyinstaller --windowed --clean --noconfirm --onefile \
+          -i raw/img/logo.icns \
+          --add-data "raw:raw" \
+          --name idCardGenerator_arm64 \
+          main.py
         
-        rm -f dist/idCardGenerator
-
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
