@@ -64,7 +64,6 @@ jobs:
         --add-data "raw:raw" \
         --name idCardGenerator \
         --osx-bundle-identifier "com.id-card.generator" \
-        --osx-arch universal2 \
         main.py
 
         # 验证架构
