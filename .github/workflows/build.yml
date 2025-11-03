@@ -37,7 +37,7 @@ jobs:
         name: windows-exe
         path: dist/idCardGenerator.exe
 
-  build-mac:
+  build-mac-arm64:
     runs-on: macos-latest
     steps:
     - name: Checkout code
@@ -57,24 +57,65 @@ jobs:
       run: |
         pip list
 
-    - name: Build executable
+    - name: Build arm64 executable
       run: |
         pyinstaller --windowed --clean --noconfirm --onefile \
         -i raw/img/logo.icns \
         --add-data "raw:raw" \
-        --name idCardGenerator \
+        --name idCardGenerator-arm64 \
         --osx-bundle-identifier "com.id-card.generator" \
-        --target-architecture x86_64 \
         main.py
 
         # 验证架构
         echo "=== 应用架构信息 ==="
-        lipo -info dist/idCardGenerator.app/Contents/MacOS/idCardGenerator
+        lipo -info dist/idCardGenerator.app/Contents/MacOS/idCardGenerator-arm64
         
-        rm -f dist/idCardGenerator
+        rm -f dist/idCardGenerator-arm64
 
-    - name: Upload artifact
+    - name: Upload arm64 artifact
       uses: actions/upload-artifact@v4
       with:
-        name: mac-app
+        name: mac-arm64-app
         path: dist/**
+
+  build-mac-x86_64:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Rosetta 2
+        run: |
+          softwareupdate --install-rosetta --agree-to-license
+
+      - name: Set up x86_64 Python environment
+        run: |
+          # 使用 Homebrew 安装 x86_64 Python
+          arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          arch -x86_64 /usr/local/bin/brew install python@3.9
+          arch -x86_64 /usr/local/bin/python3.9 -m pip install --upgrade pip
+
+      - name: Install dependencies (x86_64)
+        run: |
+          arch -x86_64 /usr/local/bin/python3.9 -m pip install --no-cache-dir -r requirements-mac.txt
+          arch -x86_64 /usr/local/bin/python3.9 -m pip install pyinstaller
+
+      - name: Build x86_64 executable
+        run: |
+          arch -x86_64 /usr/local/bin/python3.9 -m PyInstaller --windowed --clean --noconfirm \
+            -i raw/img/logo.icns \
+            --add-data "raw:raw" \
+            --name idCardGenerator-x86_64 \
+            --osx-bundle-identifier "com.id-card.generator" \
+            main.py
+
+          echo "=== 应用架构信息 ==="
+          file dist/idCardGenerator-x86_64.app/Contents/MacOS/idCardGenerator-x86_64
+          
+          rm -f dist/idCardGenerator-x86_64
+
+      - name: Upload x86_64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-app-x86_64
+          path: dist/**
