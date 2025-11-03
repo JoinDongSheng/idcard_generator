@@ -68,7 +68,7 @@ jobs:
 
         # 验证架构
         echo "=== 应用架构信息 ==="
-        lipo -info dist/idCardGenerator.app/Contents/MacOS/idCardGenerator-arm64
+        lipo -info dist/idCardGenerator-arm64.app/Contents/MacOS/idCardGenerator-arm64
         
         rm -f dist/idCardGenerator-arm64
 
